@@ -130,6 +130,7 @@ jobs:
               image_name="${{ env.REGISTRY }}/$image:$tag"
 
               docker tag $image:$tag-${{ github.run_number }} $image_name 
+              echo "Pushing $image_name"
               docker push $image_name
 
               docker_args=" --amend $image_name $docker_args"
