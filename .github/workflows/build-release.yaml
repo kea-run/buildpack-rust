@@ -144,7 +144,7 @@ jobs:
         run: |
           docker manifest create \
             ${{ env.REGISTRY }}/${{ env.BUILDPACK_NAME }}:latest \
-            ${{ steps.images.docker_args }}
+            ${{ steps.images.outputs.docker_args }}
 
 
             docker manifest push ${{ env.REGISTRY }}/${{ env.BUILDPACK_NAME }}:latest
