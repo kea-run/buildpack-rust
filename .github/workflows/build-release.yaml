@@ -14,7 +14,7 @@ defaults:
     shell: bash
 
 env:
-  BUILDPACK_NAME: ${{ github.repository.name }}
+  BUILDPACK_NAME: ${{ github.event.repository.name }}
   REGISTRY: ghcr.io/kea-run
 
 jobs:
