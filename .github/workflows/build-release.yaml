@@ -14,13 +14,12 @@ defaults:
     shell: bash
 
 env:
-  BUILDPACK_NAME: ${{ github.event.repository.name }}
+  BUILDPACK_NAME: ${{ github.repository.name }}
   REGISTRY: ghcr.io/kea-run
 
 jobs:
   create:
     strategy:
-      fail-fast: false
       matrix:
         build: 
           - arch: "amd64"
@@ -44,7 +43,6 @@ jobs:
 
       - name: Install musl tools
         run: sudo apt install -y musl-tools
-
 
       - uses: actions/cache@v3
         with:
@@ -94,6 +92,12 @@ jobs:
 
 
   push:
+    strategy:
+      matrix:
+        container_registry: 
+          - registry: ghcr.io/${{ github.repository_owner }} 
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
     needs: [create]
     permissions:
@@ -108,10 +112,9 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@v3.4.0
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
+          registry: ${{ matrix.container_registry.registry }}
+          username: ${{ matrix.container_registry.username }}
+          password: ${{ matrix.container_registry.password }}
       - name: Load and push docker images
         id: images
         run: |
@@ -128,7 +131,7 @@ jobs:
               IFS=_ read -r image tag <<< $filename
               echo "got image: $image, tag: $tag from $f"
               
-              image_name="${{ env.REGISTRY }}/$image:$tag"
+              image_name="${{ matrix.container_registry.registry }}/$image:$tag"
 
               docker tag $image:$tag-${{ github.run_number }} $image_name 
               echo "Pushing $image_name"
@@ -144,8 +147,8 @@ jobs:
       - name: Create and push docker manifest
         run: |
           docker manifest create \
-            ${{ env.REGISTRY }}/${{ env.BUILDPACK_NAME }}:latest \
+            ${{ matrix.container_registry.registry }}/${{ env.BUILDPACK_NAME }}:latest \
             ${{ steps.images.outputs.docker_args }}
 
 
-            docker manifest push ${{ env.REGISTRY }}/${{ env.BUILDPACK_NAME }}:latest
+            docker manifest push ${{ matrix.container_registry.registry }}/${{ env.BUILDPACK_NAME }}:latest
