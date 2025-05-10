@@ -78,7 +78,7 @@ jobs:
         # Using sed rather than yq until this yq bug is fixed:
         # https://github.com/mikefarah/yq/issues/1758
         run: |
-          docker_archive="${{ env.BUILDPACK_NAME}}-${{ matrix.build.arch }}.tar.zst"
+          docker_archive="${{ env.BUILDPACK_NAME}}_${{ matrix.build.arch }}.tar.zst"
           docker save ${{ env.IMAGE_NAME }} | zstd -T0 --long=31 -o $docker_archive
           
           echo "saved ${{ env.IMAGE_NAME }} to $docker_archive"
@@ -124,7 +124,7 @@ jobs:
               zstd -dc --long=31 $f | docker load
 
               filename="${basename%.*.*}"
-              IFS=- read -r image tag <<< $filename
+              IFS=_ read -r image tag <<< $filename
               echo "got image: $image, tag: $tag from $f"
               
             
