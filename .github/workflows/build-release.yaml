@@ -126,11 +126,13 @@ jobs:
               filename="${basename%.*.*}"
               IFS=_ read -r image tag <<< $filename
               echo "got image: $image, tag: $tag from $f"
+              
+              image_name="${{ env.REGISTRY }}/$image:$tag-${{ github.run_number }}"
 
-              docker tag $image:$tag ${{ env.REGISTRY }}/$image:$tag-${{ github.run_number }} 
-              docker push ${{ env.REGISTRY }}/$image:$tag
+              docker tag $image:$tag $image_name 
+              docker push $image_name
 
-              docker_args=" --amend ${{env.REGISTRY}}/$image:$tag $docker_args"
+              docker_args=" --amend $image_name $docker_args"
 
           done
       
