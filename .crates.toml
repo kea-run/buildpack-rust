@@ -1,0 +1,2 @@
+[v1]
+"buildpack-rust 0.1.0 (path+file:///home/smc/src/projects/kea-run/buildpack-rust)" = ["buildpack-rust"]
