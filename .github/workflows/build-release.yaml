@@ -147,7 +147,7 @@ jobs:
 
 
       - name: Create and push docker manifest
-        runs:
+        run: |
           docker manifest create \
             ${{ env.REGISTRY }}/${{ env.BUILDPACK_NAME }}:latest \
             ${{ steps.images.docker_args }}
