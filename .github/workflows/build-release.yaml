@@ -82,7 +82,7 @@ jobs:
           
           echo "saved ${{ env.IMAGE_NAME }} to $docker_archive"
 
-          echo "docker_archive=$docker_archive" >. "$GITHUB_OUTPUTS"
+          echo "docker_archive=$docker_archive" >> "$GITHUB_OUTPUTS"
 
 
       - uses: actions/upload-artifact@v4
