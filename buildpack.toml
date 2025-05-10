@@ -9,4 +9,4 @@ name = "Kea rust buildpack"
 arch = "aarch64"
 
 [[targets]]
-arch = "x86_64"
+arch = "amd64"
