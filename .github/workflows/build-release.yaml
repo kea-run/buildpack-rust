@@ -47,10 +47,14 @@ jobs:
       - name: Create builder image
         run: cargo libcnb package --release --target ${{ matrix.build.target }}
 
-      - name: Publish Docker images
+      - name: Create Docker images
+        env:
+          BUILDPACK_PATH: packaged/${{ matrix.build.target }}/release/kea-run_${{ env.BUILDPACK_NAME }}
         run: |
+          cat $BUILDPACK_PATH/buildpack.toml
+
           pack buildpack package ${{ env.BUILDPACK_NAME }} \
-            --path packaged/${{ matrix.build.target }}/release/kea-run_${{ env.BUILDPACK_NAME }}
+            --path $BUILDPACK_PATH
           
 
 
