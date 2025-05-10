@@ -82,7 +82,7 @@ jobs:
           
           echo "saved ${{ env.IMAGE_NAME }} to $docker_archive"
 
-          echo "docker_archive=$docker_archive" >> "$GITHUB_OUTPUTS"
+          echo "docker_archive=$docker_archive" >> "$GITHUB_OUTPUT"
 
 
       - uses: actions/upload-artifact@v4
@@ -134,7 +134,7 @@ jobs:
 
           done
       
-          echo "docker_args=$docker_args" >> "$GITHUB_OUTPUTS"
+          echo "docker_args=$docker_args" >> "$GITHUB_OUTPUT"
 
 
       - name: Create and push docker manifest
