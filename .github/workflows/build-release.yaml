@@ -127,10 +127,7 @@ jobs:
               IFS=_ read -r image tag <<< $filename
               echo "got image: $image, tag: $tag from $f"
 
-              docker image ls
-              
-            
-              docker tag $image:$tag ${{ env.REGISTRY }}/$image:$tag
+              docker tag $image:$tag ${{ env.REGISTRY }}/$image:$tag-${{ github.run_number }} 
               docker push ${{ env.REGISTRY }}/$image:$tag
 
               docker_args=" --amend ${{env.REGISTRY}}/$image:$tag $docker_args"
