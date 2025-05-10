@@ -53,8 +53,9 @@ jobs:
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
+            ~/.cargo/crates.toml
             target/
-          key: ${{ runner.os }}-${{ matrix.build.arch }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: cargo-${{ runner.os }}-${{ matrix.build.arch }}-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Add rust target
         run: rustup target add ${{ matrix.build.target }}
