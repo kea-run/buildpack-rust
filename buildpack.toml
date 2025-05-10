@@ -4,3 +4,9 @@ api = "0.10"
 id = "kea-run/buildpack-rust"
 version = "0.1.0"
 name = "Kea rust buildpack"
+
+[[targets]]
+arch = "amd64"
+
+[[targets]]
+arch = "arm64"

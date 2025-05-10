@@ -49,7 +49,9 @@ jobs:
 
       - name: Publish Docker images
         run: |
-          pack buildpack package ${{ env.BUILDPACK_NAME }} --path packaged/kea-run_${{ env.BUILDPACK_NAME }}/release
+          packaged/x86_64-unknown-linux-musl/release/kea-run_buildpack-rust
+          pack buildpack package ${{ env.BUILDPACK_NAME }} \
+            --path packaged/kea-run_${{ env.BUILDPACK_NAME }}/release
           
 
 
