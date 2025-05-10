@@ -1,0 +1,17 @@
+name: Release buildpack
+
+on:
+  push:
+    branches: ["master"]
+  workflow_dispatch:
+
+jobs:
+  release-buildpack:
+    permissions:
+      contents: read
+      packages: write
+    uses: kea-run/actions/.github/workflows/release-buildpack.yaml@master
+    with:
+      dockerhub_username: ${{ env.DOCKERHUB_USERNAME }}
+    secrets:
+      dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
