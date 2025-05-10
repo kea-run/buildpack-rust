@@ -97,7 +97,7 @@ jobs:
         container_registry: 
           - registry: ghcr.io/${{ github.repository_owner }} 
             username: ${{ github.actor }}
-            password: ${{ secrets.GITHUB_TOKEN }}
+            password_secret: GITHUB_TOKEN
     runs-on: ubuntu-latest
     needs: [create]
     permissions:
@@ -114,7 +114,7 @@ jobs:
         with:
           registry: ${{ matrix.container_registry.registry }}
           username: ${{ matrix.container_registry.username }}
-          password: ${{ matrix.container_registry.password }}
+          password: ${{ secrets[matrix.container_registry.password_secret] }}
       - name: Load and push docker images
         id: images
         run: |
