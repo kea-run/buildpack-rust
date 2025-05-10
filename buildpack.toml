@@ -6,9 +6,9 @@ version = "0.1.0"
 name = "Kea rust buildpack"
 
 [[targets]]
-arch = "aarch64"
+arch = "amd64"
 os = "linux"
 
 [[targets]]
-arch = "amd64"
+arch = "aarch64"
 os = "linux"

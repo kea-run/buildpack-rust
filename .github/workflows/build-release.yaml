@@ -71,6 +71,7 @@ jobs:
           cat $BUILDPACK_PATH/buildpack.toml
 
           pack buildpack package ${{ env.IMAGE_NAME }} \
+            --target "linux/${{ matrix.build.arch }}" \
             --path $BUILDPACK_PATH
         
       - name: Export Docker images from the Docker daemon
