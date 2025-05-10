@@ -69,7 +69,7 @@ jobs:
         run: |
           cat $BUILDPACK_PATH/buildpack.toml
 
-          pack buildpack package ${{ env.IMAGE_NAME }}: \
+          pack buildpack package ${{ env.IMAGE_NAME }} \
             --path $BUILDPACK_PATH
         
       - name: Export Docker images from the Docker daemon
@@ -99,7 +99,7 @@ jobs:
       id-token: write
     steps:
       - name: Download image artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: images
 
