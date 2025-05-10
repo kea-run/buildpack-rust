@@ -97,10 +97,6 @@ jobs:
           name: ${{ env.BUILDPACK_NAME}}-${{ matrix.build.arch }}
           path: ${{ steps.docker_save.outputs.docker_archive }}
 
-      - name: outputs
-        id: image_info
-        run:
-          echo "image_name=$IMAGE_NAME" >> "$GITHUB_OUTPUTS"
 
   push:
     runs-on: ubuntu-latest
