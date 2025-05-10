@@ -126,6 +126,8 @@ jobs:
               filename="${basename%.*.*}"
               IFS=_ read -r image tag <<< $filename
               echo "got image: $image, tag: $tag from $f"
+
+              docker image ls
               
             
               docker tag $image:$tag ${{ env.REGISTRY }}/$image:$tag
