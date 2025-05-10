@@ -21,12 +21,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        - arch: "amd64"
-          target: x86_64-unknown-linux-musl 
-        - arch: "arm64"
-          target: aarch64-unknown-linux-musl
+        build: 
+          - arch: "amd64"
+            target: x86_64-unknown-linux-musl 
+          - arch: "arm64"
+            target: aarch64-unknown-linux-musl
 
-    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    runs-on: ${{ matrix.build.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,11 +39,11 @@ jobs:
         run: cargo install --locked libcnb-cargo
 
       - name: Create builder image
-        run: cargo libcnb package --release --target ${{ matrix.target }}
+        run: cargo libcnb package --release --target ${{ matrix.build.target }}
 
       - name: Publish Docker images
         run: |
-          pack buildpack package ${{ env.BUILDPACK_NAME }} --path packaged/${{ matrix.target }}/release
+          pack buildpack package ${{ env.BUILDPACK_NAME }} --path packaged/${{ matrix.build.target }}/release
           
 
 
