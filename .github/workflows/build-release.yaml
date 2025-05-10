@@ -45,21 +45,6 @@ jobs:
       - name: Install musl tools
         run: sudo apt install -y musl-tools
 
-      - name: Restore cargo cache
-        uses: actions/cache/restore@v4
-        with:
-          fail-on-cache-miss: true
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          path: images.tar.zst
-
-      - name: Add rust target
-        run: rustup target add ${{ matrix.build.target }}
-
-      - name: Install libcnb-cargo
-        run: cargo install --locked libcnb-cargo
-
-      - name: Create builder image
-        run: cargo libcnb package --release --target ${{ matrix.build.target }}
 
       - uses: actions/cache@v3
         with:
@@ -71,6 +56,14 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
+      - name: Add rust target
+        run: rustup target add ${{ matrix.build.target }}
+
+      - name: Install libcnb-cargo
+        run: cargo install --locked libcnb-cargo
+
+      - name: Create builder image
+        run: cargo libcnb package --release --target ${{ matrix.build.target }}
 
       - name: Create Docker images
         run: |
