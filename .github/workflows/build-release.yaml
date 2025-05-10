@@ -117,7 +117,7 @@ jobs:
         
           docker_args=""
 
-          for f in $(find ./images -maxdepth 1 -type f); do
+          for f in $(find ./images -maxdepth 2 -type f); do
               basename="$(basename $f)"
               echo "Loading $f into docker"
               zstd -dc --long=31 $f | docker load
