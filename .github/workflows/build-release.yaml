@@ -15,7 +15,7 @@ defaults:
 
 env:
   BUILDPACK_NAME: ${{ github.event.repository.name }}
-  REGISTRY: ghcr.io/rentscoop
+  REGISTRY: ghcr.io/kea-run
 
 jobs:
   create:
