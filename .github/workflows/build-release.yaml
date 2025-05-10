@@ -50,7 +50,7 @@ jobs:
       - name: Publish Docker images
         run: |
           pack buildpack package ${{ env.BUILDPACK_NAME }} \
-            --path packaged/${{ matrix.build.target }}/kea-run_${{ env.BUILDPACK_NAME }}/release
+            --path packaged/${{ matrix.build.target }}/release/kea-run_${{ env.BUILDPACK_NAME }}
           
 
 
