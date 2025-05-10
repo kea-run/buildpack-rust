@@ -34,7 +34,7 @@ jobs:
     env:
       BUILDPACK_PATH: packaged/${{ matrix.build.target }}/release/kea-run_${{ env.BUILDPACK_NAME }}
       IMAGE_TAG: ${{ matrix.build.arch }}-${{ github.run_number }} 
-      IMAGE_NAME: ${{ env.BUILDPACK_NAME }}:${{ matrix.build.arch }}-${{ github.run_number }} 
+      IMAGE_NAME: buildpack-rust:${{ matrix.build.arch }}-${{ github.run_number }} 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
