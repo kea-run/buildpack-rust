@@ -24,18 +24,13 @@ jobs:
         build: 
           - arch: "amd64"
             target: x86_64-unknown-linux-musl 
-          - arch: "arm64"
+          - arch: "aarch64"
             target: aarch64-unknown-linux-musl
 
-    runs-on: ${{ matrix.build.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    runs-on: ${{ matrix.build.arch == 'aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Debug docker
-        run: |
-          docker system info
-          exit 1
 
       - name: Install Pack CLI
         uses: buildpacks/github-actions/setup-pack@c502bcff683efa6f6d56a325df3fbe1722e21881 # v5.8.11

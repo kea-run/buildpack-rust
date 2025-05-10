@@ -6,7 +6,7 @@ version = "0.1.0"
 name = "Kea rust buildpack"
 
 [[targets]]
-arch = "amd64"
+arch = "aarch64"
 
 [[targets]]
-arch = "arm64"
+arch = "x86_64"
