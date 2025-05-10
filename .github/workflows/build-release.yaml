@@ -15,6 +15,7 @@ defaults:
 
 env:
   BUILDPACK_NAME: buildpack-rust
+  REGISTRY: ghcr.io/rentscoop
 
 jobs:
   create:
@@ -28,6 +29,12 @@ jobs:
             target: aarch64-unknown-linux-musl
 
     runs-on: ${{ matrix.build.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    outputs:
+      image_name: ${{ steps.image_info.outputs.image_name }}
+    env:
+      BUILDPACK_PATH: packaged/${{ matrix.build.target }}/release/kea-run_${{ env.BUILDPACK_NAME }}
+      IMAGE_TAG: ${{ matrix.build.arch }}-${{ github.run_number }} 
+      IMAGE_NAME: ${{ env.BUILDPACK_NAME }}:${{ matrix.build.arch }}-${{ github.run_number }} 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,6 +45,13 @@ jobs:
       - name: Install musl tools
         run: sudo apt install -y musl-tools
 
+      - name: Restore cargo cache
+        uses: actions/cache/restore@v4
+        with:
+          fail-on-cache-miss: true
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          path: images.tar.zst
+
       - name: Add rust target
         run: rustup target add ${{ matrix.build.target }}
 
@@ -47,14 +61,96 @@ jobs:
       - name: Create builder image
         run: cargo libcnb package --release --target ${{ matrix.build.target }}
 
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+
       - name: Create Docker images
-        env:
-          BUILDPACK_PATH: packaged/${{ matrix.build.target }}/release/kea-run_${{ env.BUILDPACK_NAME }}
         run: |
           cat $BUILDPACK_PATH/buildpack.toml
 
-          pack buildpack package ${{ env.BUILDPACK_NAME }} \
+          pack buildpack package ${{ env.IMAGE_NAME }}: \
             --path $BUILDPACK_PATH
+        
+      - name: Export Docker images from the Docker daemon
+        id: docker_save
+        # Using sed rather than yq until this yq bug is fixed:
+        # https://github.com/mikefarah/yq/issues/1758
+        run: |
+          docker_archive="${{ env.BUILDPACK_NAME}}-${{ matrix.build.arch }}.tar.zst"
+          docker save ${{ env.IMAGE_NAME }} | zstd -T0 --long=31 -o $docker_archive
           
+          echo "saved ${{ env.IMAGE_NAME }} to $docker_archive"
+
+          echo "docker_archive=$docker_archive" >. "$GITHUB_OUTPUTS"
 
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.BUILDPACK_NAME}}-${{ matrix.build.arch }}
+          path: ${{ steps.docker_save.outputs.docker_archive }}
+
+      - name: outputs
+        id: image_info
+        runs:
+          echo "image_name=$IMAGE_NAME" >> "$GITHUB_OUTPUTS"
+  push:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      id-token: write
+    steps:
+      - name: Download image artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: images
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3.4.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Load and push docker images
+        id: images
+        run: |
+          ls -la ./images
+        
+          docker_args=""
+
+          for f in $(find ./images -maxdepth 1 -type f); do
+              basename="$(basename $f)"
+              echo "Loading $f into docker"
+              zstd -dc --long=31 $f | docker load
+
+              filename="${basename%.*.*}"
+              IFS=- read -r image tag <<< $filename
+              echo "got image: $image, tag: $tag from $f"
+              
+            
+              docker tag $image:$tag ${{ env.REGISTRY }}/$image:$tag
+              docker push ${{ env.REGISTRY }}/$image:$tag
+
+              docker_args=" --amend ${{env.REGISTRY}}/$image:$tag $docker_args"
+
+          done
+      
+          echo "docker_args=$docker_args" >> "$GITHUB_OUTPUTS"
+
+
+      - name: Create and push docker manifest
+        runs:
+          docker manifest create \
+            ${{ env.REGISTRY }}/${{ env.BUILDPACK_NAME }}:latest \
+            ${{ steps.images.docker_args }}
+
+
+            docker manifest push ${{ env.REGISTRY }}/${{ env.BUILDPACK_NAME }}:latest
