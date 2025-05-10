@@ -14,7 +14,7 @@ defaults:
     shell: bash
 
 env:
-  BUILDPACK_NAME: buildpack-rust
+  BUILDPACK_NAME: ${{ github.event.repository.name }}
   REGISTRY: ghcr.io/rentscoop
 
 jobs:
@@ -32,9 +32,9 @@ jobs:
     outputs:
       image_name: ${{ steps.image_info.outputs.image_name }}
     env:
-      BUILDPACK_PATH: packaged/${{ matrix.build.target }}/release/kea-run_${{ env.BUILDPACK_NAME }}
+      BUILDPACK_PATH: packaged/${{ matrix.build.target }}/release/kea-run_${{ github.event.repository.name }}
       IMAGE_TAG: ${{ matrix.build.arch }}-${{ github.run_number }} 
-      IMAGE_NAME: buildpack-rust:${{ matrix.build.arch }}-${{ github.run_number }} 
+      IMAGE_NAME: ${{ github.event.repository.name }}:${{ matrix.build.arch }}-${{ github.run_number }} 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
