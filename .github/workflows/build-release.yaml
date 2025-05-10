@@ -99,8 +99,9 @@ jobs:
 
       - name: outputs
         id: image_info
-        runs:
+        run:
           echo "image_name=$IMAGE_NAME" >> "$GITHUB_OUTPUTS"
+
   push:
     runs-on: ubuntu-latest
     permissions:
