@@ -61,7 +61,7 @@ jobs:
         run: rustup target add ${{ matrix.build.target }}
 
       - name: Install libcnb-cargo
-        run: which cargo libcnb || cargo install --locked libcnb-cargo
+        run: cargo install --list | grep libcnb || cargo install --locked libcnb-cargo
 
       - name: Create builder image
         run: cargo libcnb package --release --target ${{ matrix.build.target }}
