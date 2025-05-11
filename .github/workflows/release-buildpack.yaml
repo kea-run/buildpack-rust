@@ -12,6 +12,6 @@ jobs:
       packages: write
     uses: kea-run/actions/.github/workflows/release-buildpack.yaml@master
     with:
-      dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
     secrets:
+      dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
