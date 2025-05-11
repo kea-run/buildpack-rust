@@ -10,5 +10,5 @@ arch = "amd64"
 os = "linux"
 
 [[targets]]
-arch = "aarch64"
+arch = "arm64"
 os = "linux"
